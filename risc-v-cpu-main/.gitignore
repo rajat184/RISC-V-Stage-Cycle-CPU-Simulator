@@ -1,0 +1,11 @@
+simulator/__pycache__/
+__pycache__/
+assembler/
+tests/
+mid_evaluation_test_assembly.md
+mid_evaluation_test_binary
+log.md
+dmem.jpg
+imem.jpg
+stalls.jpg
+types.jpg
