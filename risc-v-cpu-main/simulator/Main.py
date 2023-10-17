@@ -55,10 +55,10 @@ def main():
     Logger.generateLog(d_mem_state, cpu_states)
     # Logger.summarizeLog(log)
 
-    Plotter.plotStalls(cpu_states)
-    Plotter.plotIMemAccesses(cpu_states)
-    Plotter.plotDMemAccesses(cpu_states)
-    Plotter.plotInstructionTypes(cpu_states, len(input_binary) // 32)
+    # Plotter.plotStalls(cpu_states)
+    # Plotter.plotIMemAccesses(cpu_states)
+    # Plotter.plotDMemAccesses(cpu_states)
+    # Plotter.plotInstructionTypes(cpu_states, len(input_binary) // 32)
 
 
 main()

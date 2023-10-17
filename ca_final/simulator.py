@@ -1,10 +1,11 @@
 class Simulator:
     def __init__(self):
+        
         self.reg_val = {
             "R0": 0,
             "R1": 0,
-            "R2": 0,
-            "R3": 0,
+            "R2": 2,
+            "R3": 1,
             "R4": 0,
             "R5": 0,
             "R6": 0,
@@ -77,9 +78,20 @@ class Simulator:
                 f"{self.register_dict[str(bin(i))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i))[2:].zfill(5)]]}\t\t\t{self.register_dict[str(bin(i + 1))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i + 1))[2:].zfill(5)]]}\t\t\t{self.register_dict[str(bin(i + 2))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i + 2))[2:].zfill(5)]]}\t\t\t{self.register_dict[str(bin(i + 3))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i + 3))[2:].zfill(5)]]}"
             )
 
-    def execute(self, instruction):
+    def run_simulator(self, instruction):
+        instruction = self.fetch(instruction)
+        opcode = self.decode(instruction)
+        self.execute(opcode, instruction)
+    
+    def fetch(self, instruction):
         instruction = instruction.replace(" ", "")
+        return instruction
+    
+    def decode(self, instruction):
         opcode = instruction[25:32]
+        return opcode
+    
+    def execute(self, opcode, instruction):
         if opcode == "0110011":
             # R type: add, sub, sll, slt, sltu, xor, srl, sra, or, and
             return self.r_type(instruction)
@@ -209,10 +221,10 @@ class Simulator:
                 # lw
                 instr_name = "lw"
                 self.reg_val[rd] = self.reg_val[rs1] + imm
-            # elif funct3 == "011":
-            #     # ld
-            #     instr_name = "ld"
-            #     self.reg_val[rd] = self.reg_val[rs1] + imm
+            elif funct3 == "011":
+                # ld
+                instr_name = "ld"
+                self.reg_val[rd] = self.reg_val[rs1] + imm
             elif funct3 == "100":
                 # lbu
                 instr_name = "lbu"
@@ -221,10 +233,10 @@ class Simulator:
                 # lhu
                 instr_name = "lhu"
                 self.reg_val[rd] = self.reg_val[rs1] + imm
-            # elif funct3 == "110":
-            #     # lwu
-            #     instr_name = "lwu"
-            #     self.reg_val[rd] = self.reg_val[rs1] + imm
+            elif funct3 == "110":
+                # lwu
+                instr_name = "lwu"
+                self.reg_val[rd] = self.reg_val[rs1] + imm
         elif opcode == "1100111":
             # jalr
             instr_name = "jalr"
@@ -349,9 +361,9 @@ class Simulator:
         self.print_reg_val()
 
 
-# sim = Simulator()
+sim = Simulator()
 # # execute a r type instruction
-# sim.execute("0000000 00010 00011 000 00001 0110011")
+sim.run_simulator("0000000 00010 00011 000 00001 0110011")
 
 # # execute a i type instruction - addi
 # sim.execute("000000000000 00001 00010 000 0010011")
