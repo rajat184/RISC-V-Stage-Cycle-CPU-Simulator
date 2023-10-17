@@ -1,0 +1,24 @@
+add r1 r2 r3
+sub r4 r5 r6
+sll r7 r8 r9
+slt r10 r11 r12
+xor r13 r14 r15
+addi r1 r2 100
+slti r3 r4 200
+xori r5 r6 300
+ori r7 r8 400
+lui r9 0001000000000000
+auipc r1 0001000000000000
+lui r2 0010000000000000
+jalr r3 r4 0
+jal r5 000100000000
+beq r1 r2 100
+bne r3 r4 200
+blt r5 r6 300
+bge r7 r8 400
+bltu r9 r10 500
+jal r1 600
+jal r2 700
+jal r3 800
+jal r4 900
+jal r5 1000

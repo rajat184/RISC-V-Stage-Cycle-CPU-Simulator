@@ -2,9 +2,9 @@ class Simulator:
     def __init__(self):
         self.reg_val = {
             "R0": 0,
-            "R1": 1,
-            "R2": 1,
-            "R3": 2,
+            "R1": 0,
+            "R2": 0,
+            "R3": 0,
             "R4": 0,
             "R5": 0,
             "R6": 0,
