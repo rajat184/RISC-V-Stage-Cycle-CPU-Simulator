@@ -70,6 +70,22 @@ class Simulator:
             "11111": "R31",
         }
 
+        self.pipeline = {
+            "W": False,
+            "M": False,
+            "X": False,
+            "D": False,
+            "F": False,
+        }
+        
+        self.curr_fetch = None
+        self.curr_decode = None
+        self.curr_execute = None
+        self.curr_memory = None
+        self.curr_writeback = None
+        
+        self.cycle = 1
+
     def print_reg_val(self):
         # print register values in a table
         print("Register Values:")
@@ -78,10 +94,56 @@ class Simulator:
                 f"{self.register_dict[str(bin(i))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i))[2:].zfill(5)]]}\t\t\t{self.register_dict[str(bin(i + 1))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i + 1))[2:].zfill(5)]]}\t\t\t{self.register_dict[str(bin(i + 2))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i + 2))[2:].zfill(5)]]}\t\t\t{self.register_dict[str(bin(i + 3))[2:].zfill(5)]}: {self.reg_val[self.register_dict[str(bin(i + 3))[2:].zfill(5)]]}"
             )
 
-    def run_simulator(self, instruction):
-        instruction = self.fetch(instruction)
-        opcode = self.decode(instruction)
-        self.execute(opcode, instruction)
+    def print_pipeline(self):
+        # print pipeline in a table
+        print(self.cycle)
+        for key in self.pipeline:
+            if self.pipeline[key]:
+                print(f"{key}")
+        print()
+
+    def run_simulator(self, instructions):
+        total_instructions = len(instructions)
+        executed_instructions = 0
+        while executed_instructions < total_instructions:
+            curr_instruction = instructions[executed_instructions]
+
+            # execute
+            if self.curr_decode is not None:
+                self.curr_execute = self.execute(self.curr_decode[0], self.curr_decode[1])
+                self.pipeline["X"] = True
+            else:
+                # print("Execute stalled")
+                self.curr_execute = None
+
+            
+            # decode
+            if self.curr_fetch is not None:
+                self.curr_decode = self.decode(self.curr_fetch)
+                self.pipeline["D"] = True
+            else:
+                self.curr_decode = None
+                self.pipeline["D"] = False
+
+
+            # fetch
+            # if not self.pipeline["F"]:
+            #     self.curr_fetch = self.fetch(curr_instruction)
+            #     self.pipeline["F"] = True
+            # else:
+            #     # print("Fetch stalled"))
+            if self.cycle - 1 < total_instructions:
+                self.curr_fetch = self.fetch(instructions[self.cycle - 1])
+                self.pipeline["F"] = True
+            else:
+                self.curr_fetch = None
+                self.pipeline["F"] = False
+
+            if self.pipeline["X"]:
+                executed_instructions += 1
+
+            self.print_pipeline()
+            self.cycle += 1
     
     def fetch(self, instruction):
         instruction = instruction.replace(" ", "")
@@ -89,9 +151,10 @@ class Simulator:
     
     def decode(self, instruction):
         opcode = instruction[25:32]
-        return opcode
+        return [opcode, instruction]
     
     def execute(self, opcode, instruction):
+        instruction = instruction.replace(" ", "")
         if opcode == "0110011":
             # R type: add, sub, sll, slt, sltu, xor, srl, sra, or, and
             return self.r_type(instruction)
@@ -113,6 +176,9 @@ class Simulator:
         else:
             print("Invalid instruction")
 
+    def writeback(self, rd, x):
+        self.reg_val[rd] = x
+
     def r_type(self, instruction):
         funct7 = instruction[0:7]
         rs2 = self.register_dict[instruction[7:12]]
@@ -125,19 +191,23 @@ class Simulator:
             if funct3 == "000":
                 # add
                 instr_name = "add"
-                self.reg_val[rd] = self.reg_val[rs1] + self.reg_val[rs2]
+                x = self.reg_val[rs1] + self.reg_val[rs2]
+                return [rd, x]
             elif funct3 == "001":
                 # sll
                 instr_name = "sll"
-                self.reg_val[rd] = self.reg_val[rs1] << self.reg_val[rs2]
+                x = self.reg_val[rs1] << self.reg_val[rs2]
+                return [rd, x]
             elif funct3 == "010":
                 # slt
                 instr_name = "slt"
-                self.reg_val[rd] = 1 if self.reg_val[rs1] < self.reg_val[rs2] else 0
+                x = 1 if self.reg_val[rs1] < self.reg_val[rs2] else 0
+                return [rd, x]
             elif funct3 == "011":
                 # sltu
                 instr_name = "sltu"
-                self.reg_val[rd] = 1 if self.reg_val[rs1] < self.reg_val[rs2] else 0
+                x = 1 if self.reg_val[rs1] < self.reg_val[rs2] else 0
+                
             elif funct3 == "100":
                 # xor
                 instr_name = "xor"
@@ -363,7 +433,13 @@ class Simulator:
 
 sim = Simulator()
 # # execute a r type instruction
-sim.run_simulator("0000000 00010 00011 000 00001 0110011")
+sim.run_simulator([
+    "0000000 00010 00011 000 00001 0110011", 
+    "0000000 00001 00010 000 00000 1100011", 
+    "0000000 00010 00011 000 00001 0110011", 
+    "00000000000000000000 00001 0110111", 
+    "0000000 00010 00011 000 00001 0110011"
+    ])
 
 # # execute a i type instruction - addi
 # sim.execute("000000000000 00001 00010 000 0010011")
