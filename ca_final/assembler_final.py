@@ -287,7 +287,7 @@ class Assembler:
             else:
                 # Convert immediate to 12-bit binary
                 imm_binary = format(int(l[3]), '012b')
-        
+            imm_binary = imm_binary[::-1]
             # Get the binary representation of rs2
             rs2_binary = self.getval(self.register_dict, l[2])
             # Get the binary representation of rs1
