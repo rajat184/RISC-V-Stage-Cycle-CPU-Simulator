@@ -1,24 +1,35 @@
-add r1 r2 r3
-sub r4 r5 r6
-sll r7 r8 r9
-slt r10 r11 r12
-xor r13 r14 r15
-addi r1 r2 100
-slti r3 r4 200
-xori r5 r6 300
-ori r7 r8 400
-lui r9 0001000000000000
-auipc r1 0001000000000000
-lui r2 0010000000000000
-jalr r3 r4 0
-jal r5 000100000000
-beq r1 r2 100
-bne r3 r4 200
-blt r5 r6 300
-bge r7 r8 400
-bltu r9 r10 500
-jal r1 600
-jal r2 700
-jal r3 800
-jal r4 900
-jal r5 1000
+LUI r1 100
+AUIPC r2 200
+BEQ r6 r7 500
+BNE r8 r9 600
+BLT r10 r11 700
+BGE r12 r13 800
+BLTU r14 r15 900
+BGEU r16 r17 1000
+LB r18 r19 1100
+LH r20 r21 1200
+LW r22 r23 1300
+LBU r24 r25 1400
+LHU r26 r27 1500
+SB r28 r29 1600
+SH r30 r31 1700
+SW r1 r2 1800
+ADDI r3 r4 1900
+SLTI r5 r6 2000
+SLTIU r7 r8 2100
+XORI r9 r10 2200
+ORI r11 r12 2300
+ANDI r13 r14 2400
+SLLI r15 r16 10
+SRLI r17 r18 11
+SRAI r19 r20 12
+ADD r21 r22 r23
+SUB r24 r25 r26
+SLL r27 r28 r29
+SLT r30 r31 r1
+SLTU r2 r3 r4
+XOR r5 r6 r7
+SRL r8 r9 r10
+SRA r11 r12 r13
+OR r14 r15 r16
+AND r17 r18 r19
