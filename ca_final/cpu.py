@@ -1,6 +1,7 @@
 from assembler_final import Assembler
 from simulator import Simulator
 
+
 class CPU:
     def __init__(self):
         self.assembler = Assembler()
@@ -14,18 +15,25 @@ class CPU:
     def encode(self, instructions):
         encoded_instructions = []
         for instruction in instructions:
-            encoded_instruction = self.assembler.encode_instruction(instruction)
+            encoded_instruction = self.assembler.encode_instruction(
+                instruction)
             print(instruction + ' -> ' + encoded_instruction)
             encoded_instructions.append(encoded_instruction)
         return encoded_instructions
 
     def execute(self, encoded_instructions):
-        for encoded_instruction in encoded_instructions:
-            self.simulator.execute(encoded_instruction)
+        self.simulator.run_simulator(encoded_instructions)
+
+    def createLogFile(self, encoded_instructions):
+        with open('log.txt', 'w') as f:
+            for instruction in encoded_instructions:
+                f.write(instruction + '\n')
+
 
 if __name__ == '__main__':
     cpu = CPU()
-    instructions = cpu.read_file('ca-final/test_file.txt')
+    instructions = cpu.read_file('test_file.txt')
     encoded_instructions = cpu.encode(instructions)
-    print(encoded_instructions)
-    cpu.execute(encoded_instructions)
+    cpu.createLogFile(encoded_instructions)
+    instructions = cpu.read_file('log.txt')
+    cpu.execute(instructions)
