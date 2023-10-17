@@ -108,6 +108,14 @@ class Simulator:
         while executed_instructions < total_instructions:
             curr_instruction = instructions[executed_instructions]
 
+            # writeback
+            if self.curr_execute is not None:
+                self.curr_writeback = self.writeback(self.curr_execute[0][0], self.curr_execute[0][1], self.curr_execute[1])
+                self.pipeline["W"] = True
+            else:
+                self.curr_execute = None
+                self.pipeline["W"] = False
+
             # execute
             if self.curr_decode is not None:
                 self.curr_execute = self.execute(self.curr_decode[0], self.curr_decode[1])
@@ -115,6 +123,7 @@ class Simulator:
             else:
                 # print("Execute stalled")
                 self.curr_execute = None
+                self.pipeline["X"] = False
 
             
             # decode
@@ -139,7 +148,7 @@ class Simulator:
                 self.curr_fetch = None
                 self.pipeline["F"] = False
 
-            if self.pipeline["X"]:
+            if self.pipeline["W"]:
                 executed_instructions += 1
 
             self.print_pipeline()
@@ -157,27 +166,30 @@ class Simulator:
         instruction = instruction.replace(" ", "")
         if opcode == "0110011":
             # R type: add, sub, sll, slt, sltu, xor, srl, sra, or, and
-            return self.r_type(instruction)
+            return [self.r_type(instruction), "R"]
         elif opcode == "0010011":
             # I type: addi, slti, sltiu, xori, ori, andi, slli, srli, srai
-            return self.i_type(instruction)
+            return [self.i_type(instruction), "I"]
         elif opcode == "0100011":
             # S type: sb, sh, sw, sd
-            return self.s_type(instruction)
+            return [self.s_type(instruction), "S"]
         elif opcode == "1100011":
             # SB type: beq, bne, blt, bge, bltu, bgeu
-            return self.sb_type(instruction)
+            return [self.sb_type(instruction), "SB"]
         elif opcode == "0110111" or opcode == "0010111":
             # U type: lui, auipc
-            return self.u_type(instruction)
+            return [self.u_type(instruction), "U"]
         elif opcode == "1101111":
             # UJ type: jal
-            return self.uj_type(instruction)
+            return [self.uj_type(instruction), "UJ"]
         else:
             print("Invalid instruction")
 
-    def writeback(self, rd, x):
-        self.reg_val[rd] = x
+    def writeback(self, rd, x, instr_type: str):
+        if instr_type == "R":
+            self.reg_val[rd] = x
+        elif instr_type == "I":
+            pass
 
     def r_type(self, instruction):
         funct7 = instruction[0:7]
@@ -192,50 +204,61 @@ class Simulator:
                 # add
                 instr_name = "add"
                 x = self.reg_val[rs1] + self.reg_val[rs2]
-                return [rd, x]
+                
+            
             elif funct3 == "001":
                 # sll
                 instr_name = "sll"
                 x = self.reg_val[rs1] << self.reg_val[rs2]
-                return [rd, x]
+                
+            
             elif funct3 == "010":
                 # slt
                 instr_name = "slt"
                 x = 1 if self.reg_val[rs1] < self.reg_val[rs2] else 0
-                return [rd, x]
+                
+            
             elif funct3 == "011":
                 # sltu
                 instr_name = "sltu"
                 x = 1 if self.reg_val[rs1] < self.reg_val[rs2] else 0
                 
+            
             elif funct3 == "100":
                 # xor
                 instr_name = "xor"
-                self.reg_val[rd] = self.reg_val[rs1] ^ self.reg_val[rs2]
+                x = self.reg_val[rs1] ^ self.reg_val[rs2]
+                
+
             elif funct3 == "101":
                 # srl
                 instr_name = "srl"
-                self.reg_val[rd] = self.reg_val[rs1] >> self.reg_val[rs2]
+                x = self.reg_val[rs1] >> self.reg_val[rs2]
+                
             elif funct3 == "110":
                 # or
                 instr_name = "or"
-                self.reg_val[rd] = self.reg_val[rs1] | self.reg_val[rs2]
+                x = self.reg_val[rs1] | self.reg_val[rs2]
+                
             elif funct3 == "111":
                 # and
                 instr_name = "and"
-                self.reg_val[rd] = self.reg_val[rs1] & self.reg_val[rs2]
+                x = self.reg_val[rs1] & self.reg_val[rs2]
+                
         elif funct7 == "0100000":
             if funct3 == "000":
                 # sub
                 instr_name = "sub"
-                self.reg_val[rd] = self.reg_val[rs1] - self.reg_val[rs2]
+                x = self.reg_val[rs1] - self.reg_val[rs2]
+                
             elif funct3 == "101":
                 # sra
                 instr_name = "sra"
-                self.reg_val[rd] = self.reg_val[rs1] >> self.reg_val[rs2]
-
+                x = self.reg_val[rs1] >> self.reg_val[rs2]
+                
         print(f"{instr_name} {rd}, {rs1}, {rs2}")
         self.print_reg_val()
+        return [rd, x]
 
     def i_type(self, instruction):
         opcode = instruction[25:32]
@@ -435,9 +458,9 @@ sim = Simulator()
 # # execute a r type instruction
 sim.run_simulator([
     "0000000 00010 00011 000 00001 0110011", 
-    "0000000 00001 00010 000 00000 1100011", 
+    # "0000000 00001 00010 000 00000 1100011", 
     "0000000 00010 00011 000 00001 0110011", 
-    "00000000000000000000 00001 0110111", 
+    # "00000000000000000000 00001 0110111", 
     "0000000 00010 00011 000 00001 0110011"
     ])
 
