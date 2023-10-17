@@ -1,11 +1,3 @@
-
-
-# self.getval --> returns operation's opcode...
-# self.getval(dict_1,ADD) --> returns ("0000") -> opcode of "ADD" operation.
-
-
-#  instruction: ADD r1, r2, 6
-#       l ->     0  1   2   3
 class Assembler:
     def __init__(self):
         self.register_dict = {
@@ -47,16 +39,16 @@ class Assembler:
             "SLLI": "0010011",
             "SRLI": "0010011",
             "SRAI": "0010011",
-            "ADD": "0010011",
-            "SUB": "0010011",
-            "SLL": "0010011",
-            "SLT": "0010011",
-            "SLTU": "0010011",
-            "XOR": "0010011",
-            "SRL": "0010011",
-            "SRA": "0010011",
-            "OR": "0010011",
-            "AND": "0010011",
+            "ADD": "0110011",
+            "SUB": "0110011",
+            "SLL": "0110011",
+            "SLT": "0110011",
+            "SLTU": "0110011",
+            "XOR": "0110011",
+            "SRL": "0110011",
+            "SRA": "0110011",
+            "OR": "0110011",
+            "AND": "0110011",
             "JALR": "1100111",
             "LB": "0000011",
             "LH": "0000011",
@@ -66,7 +58,6 @@ class Assembler:
             "ADDI": "0010011",
             "SLTI": "0010011",
             "SLTIU": "0010011",
-            "XORI": "0010011",
             "ORI": "0010011",
             "ANDI": "0010011",
             "BEQ": "1100011",
@@ -78,18 +69,9 @@ class Assembler:
             "JAL": "1101111",
             "LUI": "0110111",
             "AUIPC": "0010111",
-            "JALR": "1100111",
-            "LB": "0000011",
-            "LH": "0000011",
-            "LW": "0000011",
-            "LBU": "0000011",
-            "LHU": "0000011",
-            "ADDI": "0010011",
-            "SLTI": "0010011",
-            "SLTIU": "0010011",
             "XORI": "0010011",
-            "ORI": "0010011",
-            "ANDI": "0010011"
+            
+            
         }
 
         self.type_U = {
@@ -145,6 +127,7 @@ class Assembler:
             "BLTU": "1100011",
             "BGEU": "1100011"
         }
+        
 
     def getval(self, d, i):
         return d[i]
@@ -180,30 +163,30 @@ class Assembler:
             shamt_binary = format(int(l[3]), '05b')
             rs1_binary = self.getval(self.register_dict, l[2])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SLLI"]
+            opcode = "0010011"
             funct3 = "001"
-            return "0000000"+str(shamt_binary) + rs1_binary + funct3 + rd_binary + opcode
+            return "0000000"+" "+str(shamt_binary)+" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode
         elif l[0] == "SRLI":
             shamt_binary = format(int(l[3]), '05b')
             rs1_binary = self.getval(self.register_dict, l[2])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SRLI"]
+            opcode = "0010011"
             funct3 = "101"  # Funct3 for SRLI
-            return "0000000"+str(shamt_binary) + rs1_binary + funct3 + rd_binary + opcode
+            return "0000000"+" "+str(shamt_binary)+" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode
         elif l[0] == "SRAI":
             shamt_binary = format(int(l[3]), '05b')
             rs1_binary = self.getval(self.register_dict, l[2])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SRAI"]
+            opcode = "0010011"
             funct3 = "101"  # Funct3 for SRAI
-            return "0100000"+str(shamt_binary) + rs1_binary + funct3 + rd_binary + opcode
+            return "0100000"+" "+str(shamt_binary)+ " " + rs1_binary+ " " + funct3+ " " + rd_binary+ " " + opcode
 
         elif l[0] == "ADD":         # Done
             # ADD RD R2 R3
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["ADD"]
+            opcode = "0110011"
             funct3 = "000"  # Funct3 for ADD
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -212,7 +195,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SUB"]
+            opcode = "0110011"
             funct3 = "000"  # Funct3 for SUB
             return "0100000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -221,7 +204,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SLL"]
+            opcode = "0110011"
             funct3 = "001"  # Funct3 for SLL
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -229,7 +212,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SLT"]
+            opcode = "0110011"
             funct3 = "010"  # Funct3 for SLT
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -237,7 +220,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SLTU"]
+            opcode = "0110011"
             funct3 = "011"  # Funct3 for SLTU
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -245,7 +228,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["XOR"]
+            opcode = "0110011"
             funct3 = "100"  # Funct3 for XOR
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -254,7 +237,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SRL"]
+            opcode = "0110011"
             funct3 = "101"  # Funct3 for SRL
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -263,7 +246,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["SRA"]
+            opcode = "0110011"
             funct3 = "101"  # Funct3 for SRA
             return "0100000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -271,7 +254,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["OR"]
+            opcode = "0110011"
             funct3 = "110"  # Funct3 for OR
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -279,7 +262,7 @@ class Assembler:
             rs1_binary = self.getval(self.register_dict, l[2])
             rs2_binary = self.getval(self.register_dict, l[3])
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_R["AND"]
+            opcode = "0110011"
             funct3 = "111"  # Funct3 for AND
             return "0000000" + " " + rs2_binary + " " + rs1_binary + " " + funct3 + " " + rd_binary + " " + opcode
 
@@ -294,9 +277,9 @@ class Assembler:
             rs2_binary = self.getval(self.register_dict, l[2])
             # Get the binary representation of rs1
             rs1_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_dict["SB"]  # Opcode for SH
+            opcode = "0100011"  # Opcode for SH
             funct3 = "000"  # Funct3 for SH
-            return imm_binary[10:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[4::-1] + opcode
+            return imm_binary[10:3:-1]+" " + rs2_binary+" " + rs1_binary+" " + funct3+" " + imm_binary[4::-1]+" " + opcode
 
         elif l[0] == "SH":    # done
             if (int(l[3]) < 0):
@@ -309,9 +292,9 @@ class Assembler:
             rs2_binary = self.getval(self.register_dict, l[2])
             # Get the binary representation of rs1
             rs1_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_dict["SH"]  # Opcode for SH
+            opcode = "0100011"  # Opcode for SH
             funct3 = "001"  # Funct3 for SH
-            return imm_binary[10:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[4::-1] + opcode
+            return imm_binary[10:3:-1]+" " + rs2_binary +" "+ rs1_binary+" " + funct3+" " + imm_binary[4::-1]+" " + opcode
 
         elif l[0] == "SW":    # done
             if (int(l[3]) < 0):
@@ -324,9 +307,9 @@ class Assembler:
             rs2_binary = self.getval(self.register_dict, l[2])
             # Get the binary representation of rs1
             rs1_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_dict["SW"]  # Opcode for SW
+            opcode = "0100011"  # Opcode for SW
             funct3 = "010"  # Funct3 for SW
-            return imm_binary[10:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[4::-1] + opcode
+            return imm_binary[10:3:-1]+" " + rs2_binary+" " + rs1_binary+" " + funct3+" " + imm_binary[4::-1]+" " + opcode
 
         elif l[0] == "LB":    # done
             if (int(l[3]) < 0):
@@ -337,10 +320,10 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["LB"]  # Opcode for LB
+            opcode = "0000011"  # Opcode for LB
             funct3 = "000"  # Funct3 for LB
 
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode
 
         elif l[0] == "LH":     # done
 
@@ -352,9 +335,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["LH"]  # Opcode for LH
+            opcode = "0000011"  # Opcode for LH
             funct3 = "001"  # Funct3 for LH
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode
 
         elif l[0] == "LW":      # done
             if (int(l[3]) < 0):
@@ -365,9 +348,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["LW"]  # Opcode for LW
+            opcode = "0000011"  # Opcode for LW
             funct3 = "010"  # Funct3 for LW
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode
 
         elif l[0] == "LBU":     # done
             if (int(l[3]) < 0):
@@ -378,9 +361,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["LBU"]  # Opcode for LBU
+            opcode = "0000011"  # Opcode for LBU
             funct3 = "100"  # Funct3 for LBU
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode
         elif l[0] == "LHU":     # done
             if (int(l[3]) < 0):
                 imm_binary = self.imm_access(int(l[3]), 12)
@@ -390,9 +373,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["LHU"]  # Opcode for LHU
+            opcode = "0000011"  # Opcode for LHU
             funct3 = "101"  # Funct3 for LHU
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode
 
         elif l[0] == "ADDI":   # done
             if (int(l[3]) < 0):
@@ -403,9 +386,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["ADDI"]
+            opcode = "0010011"
             funct3 = "000"  # Funct3 for ADDI
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1] + " " +rs1_binary + " "+ funct3+ " " + rd_binary+ " " + opcode
 
         elif l[0] == "SLTI":  # done
             if (int(l[3]) < 0):
@@ -416,9 +399,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["SLTI"]
+            opcode = "0010011"
             funct3 = "010"  # Funct3 for SLTI
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+ " " + rs1_binary+ " " + funct3+ " " + rd_binary+ " " + opcode
 
         elif l[0] == "SLTIU":  # done
             if (int(l[3]) < 0):
@@ -429,9 +412,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["SLTIU"]
+            opcode = "0010011"
             funct3 = "011"  # Funct3 for SLTIU
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+ " " + rs1_binary+ " " + funct3+ " " + rd_binary+ " " + opcode
 
         elif l[0] == "XORI":   # done
             if (int(l[3]) < 0):
@@ -442,9 +425,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["XORI"]
+            opcode = "0010011"
             funct3 = "100"  # Funct3 for XORI
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+ " " + rs1_binary+ " " + funct3+ " " + rd_binary+ " " + opcode
 
         elif l[0] == "ORI":   # done
             if (int(l[3]) < 0):
@@ -455,9 +438,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["ORI"]
+            opcode = "0010011"
             funct3 = "110"  # Funct3 for ORI
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+ " " + rs1_binary+ " " + funct3+ " " + rd_binary+ " " + opcode
         elif l[0] == "ANDI":    # done
             if (int(l[3]) < 0):
                 imm_binary = self.imm_access(int(l[3]), 12)
@@ -467,22 +450,11 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rd_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["ANDI"]
+            opcode = "0010011"
             funct3 = "111"  # Funct3 for ANDI
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+            return imm_binary[11::-1]+ " " + rs1_binary+ " " + funct3+ " " + rd_binary+ " " + opcode
 
-        elif l[0] == "JALR":    # done
-            if (int(l[3]) < 0):
-                imm_binary = self.imm_access(int(l[3]), 12)
-            else:
-                # Convert immediate to 12-bit binary
-                imm_binary = format(int(l[3]), '012b')
-            imm_binary = imm_binary[::-1]
-            rd_binary = self.getval(self.register_dict, l[1])
-            rs1_binary = self.getval(self.register_dict, l[2])
-            opcode = self.type_dict["JALR"]
-            funct3 = "000"  # Funct3 for JALR
-            return imm_binary[11::-1] + rs1_binary + funct3 + rd_binary + opcode
+        
         elif l[0] == "BEQ":    # done
 
             if (int(l[3]) < 0):
@@ -496,11 +468,11 @@ class Assembler:
             # Get the binary representation of rs1
             rs1_binary = self.getval(self.register_dict, l[1])
 
-            opcode = self.type_dict["BEQ"]  # Opcode for BEQ
+            opcode = "1100011"  # Opcode for BEQ
             funct3 = "000"  # Funct3 for BEQ
 
             # Combine the fields to form the instruction
-            return imm_binary[11] + imm_binary[9:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[3::-1]+imm_binary[10] + opcode
+            return imm_binary[11]+imm_binary[9:3:-1]+ " " + rs2_binary+ " " + rs1_binary+ " " + funct3+ " " + imm_binary[3::-1]+ " "+imm_binary[10]+ " " + opcode
 
         elif l[0] == "BNE":     # done
             if (int(l[3]) < 0):
@@ -514,9 +486,9 @@ class Assembler:
             # Get the binary representation of rs1
             rs1_binary = self.getval(self.register_dict, l[1])
 
-            opcode = self.type_dict["BNE"]  # Opcode for BNE
+            opcode = "1100011" # Opcode for BNE
             funct3 = "001"  # Funct3 for BNE
-            return imm_binary[11] + imm_binary[9:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[3::-1]+imm_binary[10] + opcode
+            return imm_binary[11] + imm_binary[9:3:-1]+ " " + rs2_binary+ " " + rs1_binary+ " " + funct3+ " " + imm_binary[3::-1]+ " "+imm_binary[10]+ " " + opcode
 
         elif l[0] == "BLT":    # done
             if (int(l[3]) < 0):
@@ -527,9 +499,9 @@ class Assembler:
             rs2_binary = self.getval(self.register_dict, l[2])
             rs1_binary = self.getval(self.register_dict, l[1])
 
-            opcode = self.type_dict["BLT"]
+            opcode = "1100011"
             funct3 = "100"
-            return imm_binary[11] + imm_binary[9:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[3::-1]+imm_binary[10] + opcode
+            return imm_binary[11] + imm_binary[9:3:-1]+ " " + rs2_binary+ " " + rs1_binary+ " " + funct3+ " " + imm_binary[3::-1]+ " "+imm_binary[10]+ " " + opcode
 
         elif l[0] == "BGE":   # done
             if (int(l[3]) < 0):
@@ -539,9 +511,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rs2_binary = self.getval(self.register_dict, l[2])
             rs1_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_dict["BGE"]  # Opcode for BGE
+            opcode = "1100011" # Opcode for BGE
             funct3 = "101"  # Funct3 for BGE
-            return imm_binary[11] + imm_binary[9:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[3::-1]+imm_binary[10] + opcode
+            return imm_binary[11] + imm_binary[9:3:-1]+ " " + rs2_binary+ " " + rs1_binary+ " " + funct3+ " " + imm_binary[3::-1]+ " "+imm_binary[10]+ " " + opcode
 
         elif l[0] == "BLTU":    # done
 
@@ -552,9 +524,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rs2_binary = self.getval(self.register_dict, l[2])
             rs1_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_dict["BLTU"]  # Opcode for BLTU
+            opcode = "1100011" # Opcode for BLTU
             funct3 = "110"  # Funct3 for BLTU
-            return imm_binary[11] + imm_binary[9:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[3::-1]+imm_binary[10] + opcode
+            return imm_binary[11] + imm_binary[9:3:-1]+ " "+ rs2_binary+ " " + rs1_binary + " "+ funct3 + " "+ imm_binary[3::-1]+ " "+imm_binary[10]+ " " + opcode
 
         elif l[0] == "BGEU":     # done
             if (int(l[3]) < 0):
@@ -564,9 +536,9 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             rs2_binary = self.getval(self.register_dict, l[2])
             rs1_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_dict["BGEU"]  # Opcode for BGEU
+            opcode = "1100011" # Opcode for BGEU
             funct3 = "111"  # Funct3 for BGEU
-            return imm_binary[11] + imm_binary[9:3:-1] + rs2_binary + rs1_binary + funct3 + imm_binary[3::-1]+imm_binary[10] + opcode
+            return imm_binary[11]+ imm_binary[9:3:-1]+ " " + rs2_binary+ " " + rs1_binary+ " " + funct3+ " " + imm_binary[3::-1]+ " "+imm_binary[10]+ " " + opcode
 
         elif l[0] == "LUI":
             if (int(l[2]) < 0):
@@ -579,10 +551,10 @@ class Assembler:
             # Get the binary representation of rd
             rd_binary = self.getval(self.register_dict, l[1])
 
-            opcode = self.type_dict["LUI"]  # Opcode for LUI
+            opcode = "0110111"  # Opcode for LUI
 
             # Combine the fields to form the instruction
-            return imm_binary[31:10] + rd_binary + opcode
+            return imm_binary[31:11:-1] +" " + rd_binary + " " + opcode
 
         elif l[0] == "AUIPC":
             if (int(l[2]) < 0):
@@ -593,22 +565,5 @@ class Assembler:
             imm_binary = imm_binary[::-1]
             # Get the binary representation of rd
             rd_binary = self.getval(self.register_dict, l[1])
-            opcode = self.type_dict["AUIPC"]  # Opcode for AUIPC
-            return imm_binary[31:10] + rd_binary + opcode
-
-        elif l[0] == "JAL":
-            # Convert immediate to 32-bit binary
-            imm_binary = format(int(l[2]), '032b')
-
-            imm_20 = imm_binary[0]  # Bit 20 (most significant bit)
-            imm_10_1 = imm_binary[1:11]  # Bits 10 to 1
-            imm_11 = imm_binary[11]  # Bit 11
-            imm_19_12 = imm_binary[12:20]  # Bits 19 to 12
-
-            # Get the binary representation of rd
-            rd_binary = self.getval(self.register_dict, l[1])
-
-            opcode = self.type_dict["JAL"]  # Opcode for JAL
-
-            # Combine the fields to form the instruction
-            return imm_20 + imm_10_1 + imm_11 + imm_19_12 + rd_binary + opcode
+            opcode = "0010111"  # Opcode for AUIPC
+            return imm_binary[31:11:-1] +" " + rd_binary + " " + opcode
