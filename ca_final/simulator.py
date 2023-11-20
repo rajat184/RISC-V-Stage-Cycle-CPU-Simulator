@@ -1,11 +1,18 @@
 class Simulator:
     def __init__(self):
-        
+        self.program_counter = 0
+
+        self.mar = 0 # memory address register to store the temporary address of the program counter
+
+        self.inst_memory = []
+
+        self.branch_flag = False
+
         self.reg_val = {
             "R0": 0,
             "R1": 0,
-            "R2": 2,
-            "R3": 1,
+            "R2": 0,
+            "R3": 0,
             "R4": 0,
             "R5": 0,
             "R6": 0,
@@ -86,8 +93,11 @@ class Simulator:
         
         self.cycle = 1
 
+        self.executed_instructions = 0
+
     def print_reg_val(self):
         # print register values in a table
+        # print("PC: ", self.program_counter)
         print("Register Values:")
         for i in range(0, 32, 4):
             print(
@@ -102,11 +112,15 @@ class Simulator:
                 print(f"{key}")
         print()
 
+    def load_instructions_into_memory(self, instructions):
+        for instruction in instructions:
+            self.inst_memory.append(instruction)
+
     def run_simulator(self, instructions):
-        total_instructions = len(instructions)
-        executed_instructions = 0
-        while executed_instructions < total_instructions:
-            curr_instruction = instructions[executed_instructions]
+        self.load_instructions_into_memory(instructions)
+        total_instructions = 7 #len(self.inst_memory)
+        while self.executed_instructions < total_instructions:
+            # curr_instruction = instructions[self.program_counter]
 
             # writeback
             if self.curr_memory is not None:
@@ -141,6 +155,9 @@ class Simulator:
             if self.curr_fetch is not None:
                 self.curr_decode = self.decode(self.curr_fetch)
                 self.pipeline["D"] = True
+            elif self.branch_flag:
+                self.pipeline["D"] = True
+
             else:
                 self.curr_decode = None
                 self.pipeline["D"] = False
@@ -152,15 +169,21 @@ class Simulator:
             #     self.pipeline["F"] = True
             # else:
             #     # print("Fetch stalled"))
-            if self.cycle - 1 < total_instructions:
-                self.curr_fetch = self.fetch(instructions[self.cycle - 1])
+            if self.program_counter < total_instructions:
+                if self.branch_flag:
+                    self.branch_flag = False
+                else:
+                    self.curr_fetch = self.fetch(self.inst_memory[self.program_counter])
+                    self.mar = self.program_counter
+                    self.program_counter += 1
                 self.pipeline["F"] = True
+                
             else:
                 self.curr_fetch = None
                 self.pipeline["F"] = False
 
             if self.pipeline["W"]:
-                executed_instructions += 1
+                self.executed_instructions += 1
 
             self.print_pipeline()
             self.cycle += 1
@@ -199,10 +222,11 @@ class Simulator:
     def writeback(self, register, x, instr_type: str):
         if instr_type == "R" or instr_type == "I" or instr_type == "S":
             self.reg_val[register] = x
-        elif instr_type == "SB":
-            self.reg_val["R0"] = self.reg_val[register] + x
+        
         elif instr_type == "U" or instr_type == "UJ":
             self.reg_val[register] = x
+        
+        self.print_reg_val()
             
 
     def r_type(self, instruction):
@@ -271,7 +295,7 @@ class Simulator:
                 x = self.reg_val[rs1] >> self.reg_val[rs2]
                 
         print(f"{instr_name} {rd}, {rs1}, {rs2}")
-        self.print_reg_val()
+        # self.print_reg_val()
         return [rd, x]
 
     def i_type(self, instruction):
@@ -359,7 +383,7 @@ class Simulator:
                     instr_name = "sbreak"
 
         print(f"{instr_name} {rd}, {rs1}, {imm}")
-        self.print_reg_val()
+        # self.print_reg_val()
         return [rd, x]
     
     def s_type(self, instruction):
@@ -389,7 +413,7 @@ class Simulator:
             #     self.reg_val[rs1] = imm + self.reg_val[rs2]
 
         print(f"{instr_name} {rs1}, {imm}({rs2})")
-        self.print_reg_val()
+        # self.print_reg_val()
         return [rs1, x]
 
     def sb_type(self, instruction):
@@ -397,8 +421,8 @@ class Simulator:
         rs1 = self.register_dict[instruction[12:17]]
         rs2 = self.register_dict[instruction[7:12]]
         funct3 = instruction[17:20]
-        imm = int(instruction[0] + instruction[24] +
-                  instruction[1:7] + instruction[20:24] + "0", 2)
+        imm = int("0" + instruction[0] + instruction[24] +
+                  instruction[1:7] + instruction[20:24], 2)
         instr_name = ""
 
         if opcode == "1100011":
@@ -447,13 +471,20 @@ class Simulator:
             
 
         print(f"{instr_name} {rs1}, {rs2}, {imm}")
-        self.print_reg_val()
-        return ["R0", imm]
+        # self.print_reg_val()
+        if imm != 0:
+            self.program_counter = self.mar + imm - 1
+            self.curr_decode = None
+            self.curr_fetch = None
+            self.branch_flag = True
+            self.executed_instructions += imm - 1
+        return ["PC", imm]
 
     def u_type(self, instruction):
         opcode = instruction[25:32]
         rd = self.register_dict[instruction[20:25]]
-        imm = int(instruction[0:20] + "000000000000", 2)
+        
+        imm = int("000000000000" + instruction[0:20], 2)
         instr_name = ""
 
         if opcode == "0110111":
@@ -463,10 +494,13 @@ class Simulator:
         elif opcode == "0010111":
             # auipc
             instr_name = "auipc"
-            x = imm
+            if self.curr_fetch is None:
+                x = imm + self.mar
+            else:
+                x = imm + self.mar - 1
 
         print(f"{instr_name} {rd}, {imm}")
-        self.print_reg_val()
+        # self.print_reg_val()
         return [rd, x]
 
     def uj_type(self, instruction):
@@ -482,7 +516,7 @@ class Simulator:
             x = imm
 
         print(f"{instr_name} {rd}, {imm}")
-        self.print_reg_val()
+        # self.print_reg_val()
         return [rd, x]
 
 
