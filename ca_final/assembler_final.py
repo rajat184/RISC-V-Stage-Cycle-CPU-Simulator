@@ -569,12 +569,12 @@ class Assembler:
             return imm_binary +" " + rd_binary + " " + opcode
 
         elif l[0] == "LOADNOC":
-            if (int(l[2]) < 0):
+            if (int(l[3]) < 0):
                 imm_binary = self.imm_access(int(l[3]), 12)
             else:
                 # Convert immediate to 32-bit binary
                 imm_binary = format(int(l[3]), '012b')
-            opcode="0000001"
+            opcode="1111111"
             funct3="010"
             rs2_binary = self.getval(self.register_dict, l[1])
             rs1_binary = self.getval(self.register_dict, l[2])
@@ -583,9 +583,9 @@ class Assembler:
         elif l[0]=="STORENOC":
             
             
-            opcode="1111110"
+            opcode="1111111"
             rd_binary = "00001"
-            rs1="0001"
-            funct3="010"
+            rs1_binary="00001"
+            funct3="011"
             imm_binary="000000001111"
             return imm_binary +" " + rs1_binary+" " + funct3+" " + rd_binary+" " + opcode

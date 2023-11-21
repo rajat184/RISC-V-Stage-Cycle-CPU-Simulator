@@ -23,6 +23,7 @@ class CPU:
 
     def execute(self, encoded_instructions):
         self.simulator.run_simulator(encoded_instructions)
+        self.simulator.make_graph()
 
     def createLogFile(self, encoded_instructions):
         with open('log.txt', 'w') as f:
@@ -32,7 +33,7 @@ class CPU:
 
 if __name__ == '__main__':
     cpu = CPU()
-    instructions = cpu.read_file('test_file.txt')
+    instructions = cpu.read_file('test2.txt')
     encoded_instructions = cpu.encode(instructions)
     cpu.createLogFile(encoded_instructions)
     instructions = cpu.read_file('log.txt')
