@@ -33,7 +33,7 @@ class CPU:
 
 if __name__ == '__main__':
     cpu = CPU()
-    instructions = cpu.read_file('test2.txt')
+    instructions = cpu.read_file('test_file.txt')
     encoded_instructions = cpu.encode(instructions)
     cpu.createLogFile(encoded_instructions)
     instructions = cpu.read_file('log.txt')
